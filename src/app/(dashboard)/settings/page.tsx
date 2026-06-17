@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useCan } from '@/hooks/use-can';
+import { useI18n } from '@/hooks/use-i18n';
 import { WhatsAppConfig } from '@/components/settings/whatsapp-config';
 import { TemplateManager } from '@/components/settings/template-manager';
 import { TagManager } from '@/components/settings/tag-manager';
@@ -43,6 +44,7 @@ function isTabValue(v: string | null): v is TabValue {
 export default function SettingsPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { t } = useI18n();
 
   // Custom-field definitions are account-wide config, so editing them is
   // admin+ only — mirror the gate on the Contacts page. The `custom_fields`
@@ -69,10 +71,9 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-foreground">Settings</h1>
+        <h1 className="text-2xl font-bold text-foreground">{t('settings.page.title')}</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Manage your profile, WhatsApp® integration, message templates, and
-          tags.
+          {t('settings.page.description')}
         </p>
       </div>
 
@@ -83,28 +84,28 @@ export default function SettingsPage() {
             className="data-active:text-primary text-muted-foreground data-active:bg-muted"
           >
             <User className="size-4" />
-            Profile
+            {t('settings.page.tabs.profile')}
           </TabsTrigger>
           <TabsTrigger
             value="whatsapp"
             className="data-active:text-primary text-muted-foreground data-active:bg-muted"
           >
             <Settings className="size-4" />
-            WhatsApp Config
+            {t('settings.page.tabs.whatsapp')}
           </TabsTrigger>
           <TabsTrigger
             value="templates"
             className="data-active:text-primary text-muted-foreground data-active:bg-muted"
           >
             <MessageSquare className="size-4" />
-            Templates
+            {t('settings.page.tabs.templates')}
           </TabsTrigger>
           <TabsTrigger
             value="tags"
             className="data-active:text-primary text-muted-foreground data-active:bg-muted"
           >
             <Tag className="size-4" />
-            Tags
+            {t('settings.page.tabs.tags')}
           </TabsTrigger>
           {canEditSettings && (
             <TabsTrigger
@@ -112,7 +113,7 @@ export default function SettingsPage() {
               className="data-active:text-primary text-muted-foreground data-active:bg-muted"
             >
               <SlidersHorizontal className="size-4" />
-              Custom Fields
+              {t('settings.page.tabs.customFields')}
             </TabsTrigger>
           )}
           <TabsTrigger
@@ -120,21 +121,21 @@ export default function SettingsPage() {
             className="data-active:text-primary text-muted-foreground data-active:bg-muted"
           >
             <Coins className="size-4" />
-            Deals
+            {t('settings.page.tabs.deals')}
           </TabsTrigger>
           <TabsTrigger
             value="appearance"
             className="data-active:text-primary text-muted-foreground data-active:bg-muted"
           >
             <Palette className="size-4" />
-            Appearance
+            {t('settings.page.tabs.appearance')}
           </TabsTrigger>
           <TabsTrigger
             value="members"
             className="data-active:text-primary text-muted-foreground data-active:bg-muted"
           >
             <UsersRound className="size-4" />
-            Members
+            {t('settings.page.tabs.members')}
           </TabsTrigger>
         </TabsList>
 

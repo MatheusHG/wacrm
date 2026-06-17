@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { MessageSquare } from 'lucide-react'
 import type { ConversationsSeriesPoint } from '@/lib/dashboard/types'
+import { useI18n } from '@/hooks/use-i18n'
+import type { Translator } from '@/lib/i18n/translate'
 import { EmptyState } from './empty-state'
 import { Skeleton } from './skeleton'
 import { cn } from '@/lib/utils'
@@ -28,6 +30,7 @@ const VB_H = 240
 const PADDING = { top: 16, right: 16, bottom: 28, left: 40 }
 
 export function ConversationsChart({ series, loading, range, onRangeChange }: ConversationsChartProps) {
+  const { t } = useI18n()
   const data = series[range]
 
   // Memoise the max so per-day hover math doesn't recompute it.
@@ -49,8 +52,8 @@ export function ConversationsChart({ series, loading, range, onRangeChange }: Co
     <section className="flex h-full flex-col rounded-xl border border-border bg-card">
       <header className="flex items-center justify-between border-b border-border px-5 py-4">
         <div>
-          <h2 className="text-sm font-semibold text-foreground">Conversations Over Time</h2>
-          <p className="mt-0.5 text-xs text-muted-foreground">Daily message volume by direction</p>
+          <h2 className="text-sm font-semibold text-foreground">{t('dashboard.conversationsChart.title')}</h2>
+          <p className="mt-0.5 text-xs text-muted-foreground">{t('dashboard.conversationsChart.subtitle')}</p>
         </div>
         <div className="flex items-center gap-1 rounded-lg bg-muted/60 p-1">
           {[7, 30, 90].map((r) => (
@@ -65,7 +68,7 @@ export function ConversationsChart({ series, loading, range, onRangeChange }: Co
                   : 'text-muted-foreground hover:text-foreground',
               )}
             >
-              {r} days
+              {t('dashboard.conversationsChart.rangeDays', { days: r })}
             </button>
           ))}
         </div>
@@ -77,17 +80,17 @@ export function ConversationsChart({ series, loading, range, onRangeChange }: Co
         ) : data.every((p) => p.incoming === 0 && p.outgoing === 0) ? (
           <EmptyState
             icon={MessageSquare}
-            title="No message activity in this range"
-            hint="Send or receive messages to start populating this chart."
+            title={t('dashboard.conversationsChart.emptyTitle')}
+            hint={t('dashboard.conversationsChart.emptyHint')}
           />
         ) : (
-          <LineSvg data={data} maxY={maxY} ticks={niceTicks} />
+          <LineSvg data={data} maxY={maxY} ticks={niceTicks} t={t} />
         )}
       </div>
 
       <footer className="flex items-center gap-4 border-t border-border px-5 py-3 text-xs text-muted-foreground">
-        <LegendDot color="#3b82f6" label="Incoming" />
-        <LegendDot color="#7c3aed" label="Outgoing" />
+        <LegendDot color="#3b82f6" label={t('dashboard.conversationsChart.incoming')} />
+        <LegendDot color="#7c3aed" label={t('dashboard.conversationsChart.outgoing')} />
       </footer>
     </section>
   )
@@ -101,10 +104,12 @@ function LineSvg({
   data,
   maxY,
   ticks,
+  t,
 }: {
   data: ConversationsSeriesPoint[]
   maxY: number
   ticks: number[]
+  t: Translator
 }) {
   // Hover state: both the snapped index AND the tooltip's pixel
   // offset inside the wrapper div. They're stored together so the
@@ -195,7 +200,7 @@ function LineSvg({
         viewBox={`0 0 ${VB_W} ${VB_H}`}
         className="h-[240px] w-full"
         role="img"
-        aria-label="Conversations per day"
+        aria-label={t('dashboard.conversationsChart.ariaLabel')}
       >
         {/* Y-axis gridlines + labels */}
         {ticks.map((t) => {
@@ -287,11 +292,11 @@ function LineSvg({
           <div className="mt-1 flex flex-col gap-0.5">
             <span className="flex items-center gap-1.5 text-blue-300">
               <span className="inline-block h-1.5 w-1.5 rounded-full bg-blue-500" />
-              {hovered.incoming} incoming
+              {t('dashboard.conversationsChart.tooltipIncoming', { count: hovered.incoming })}
             </span>
             <span className="flex items-center gap-1.5 text-primary">
               <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" />
-              {hovered.outgoing} outgoing
+              {t('dashboard.conversationsChart.tooltipOutgoing', { count: hovered.outgoing })}
             </span>
           </div>
         </div>

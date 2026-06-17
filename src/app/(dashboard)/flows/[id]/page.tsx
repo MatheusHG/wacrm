@@ -6,6 +6,7 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { FlowEditorShell } from "@/components/flows/flow-editor-shell";
+import { useI18n } from "@/hooks/use-i18n";
 import type { FlowRow, FlowNodeRow } from "@/lib/flows/types";
 
 /**
@@ -22,6 +23,7 @@ import type { FlowRow, FlowNodeRow } from "@/lib/flows/types";
  */
 export default function FlowEditorPage() {
   const router = useRouter();
+  const { t } = useI18n();
   const params = useParams<{ id: string }>();
 
   const [flow, setFlow] = useState<FlowRow | null>(null);
@@ -51,7 +53,7 @@ export default function FlowEditorPage() {
       } catch (err) {
         if (!cancelled) {
           console.error(err);
-          toast.error("Couldn't load flow.");
+          toast.error(t("flows.editor.loadError"));
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -72,13 +74,15 @@ export default function FlowEditorPage() {
   if (notFound || !flow) {
     return (
       <div className="flex h-full flex-col items-center justify-center gap-3">
-        <p className="text-sm text-muted-foreground">Flow not found.</p>
+        <p className="text-sm text-muted-foreground">
+          {t("flows.editor.notFound")}
+        </p>
         <button
           type="button"
           onClick={() => router.push("/flows")}
           className="text-sm text-primary hover:opacity-80"
         >
-          ← Back to flows
+          ← {t("flows.editor.backToFlows")}
         </button>
       </div>
     );

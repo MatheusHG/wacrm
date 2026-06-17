@@ -1,0 +1,188 @@
+/* flows namespace (pt) — preenchido pela traducao por area. */
+const flows = {
+  list: {
+    title: "Fluxos",
+    beta: "Beta",
+    subtitle:
+      "Crie conversas no WhatsApp com ramificações e baseadas em botões. Úteis para menus, FAQs e triagem antes de um atendente assumir.",
+    newFlow: "Novo fluxo",
+    loadError: "Não foi possível carregar os fluxos.",
+    createError: "Não foi possível criar o fluxo.",
+    cloneError: "Falha ao clonar",
+    deleteConfirm:
+      'Excluir "{name}"? Quaisquer execuções ativas serão encerradas imediatamente.',
+    deleteSuccess: "Fluxo excluído.",
+    deleteError: "Não foi possível excluir o fluxo.",
+    gateCreate: "criar fluxos",
+    empty: {
+      title: "Nenhum fluxo ainda",
+      description:
+        "Crie sua primeira conversa — um menu de boas-vindas, uma consulta de pedidos, um bot de FAQ. Os clientes tocam em botões; o bot os direciona para a resposta certa (ou para o atendente certo).",
+      cta: "Crie seu primeiro fluxo",
+    },
+    create: {
+      title: "Criar um novo fluxo",
+      description: "Comece a partir de um modelo ou crie do zero.",
+      fromTemplate: "Começar a partir de um modelo",
+      orStartBlank: "Ou começar em branco",
+      namePlaceholder: "ex.: Menu de boas-vindas",
+      createBlank: "Criar fluxo em branco",
+      nodeCount_one: "{count} nó",
+      nodeCount_other: "{count} nós",
+    },
+    status: {
+      draft: "Rascunho",
+      active: "Ativo",
+      archived: "Arquivado",
+    },
+    card: {
+      run_one: "{count} execução",
+      run_other: "{count} execuções",
+    },
+    trigger: {
+      keywordNone: "Aciona por palavra-chave (nenhuma definida)",
+      keywords: "Aciona com: {keywords}",
+      firstInbound: "Aciona na primeira mensagem recebida de um contato",
+      manual: "Acionamento manual",
+    },
+  },
+  editor: {
+    loadError: "Não foi possível carregar o fluxo.",
+    notFound: "Fluxo não encontrado.",
+    backToFlows: "Voltar para os fluxos",
+  },
+  runs: {
+    title: "Execuções",
+    subtitle:
+      "As 50 execuções mais recentes deste fluxo. Expanda uma linha para ver o registro detalhado do motor por etapa.",
+    loadError: "Não foi possível carregar as execuções.",
+    empty:
+      "Nenhuma execução ainda. Acione o fluxo a partir de um número pessoal do WhatsApp para vê-lo aparecer aqui.",
+    unknownContact: "Contato desconhecido",
+    at: "em {nodeKey}",
+    started: "Iniciado {time}",
+    reprompts: "{count} reenvios",
+    ranFor: "durou {duration}",
+    capturedVars: "Variáveis capturadas ({count})",
+    noEvents: "Nenhum evento registrado para esta execução.",
+    status: {
+      active: "Ativa",
+      completed: "Concluída",
+      handedOff: "Transferida",
+      timedOut: "Expirou",
+      pausedByAgent: "Pausada pelo atendente",
+      failed: "Falhou",
+    },
+  },
+  builder: {
+    nodes: "Nós ({count})",
+    emptyNodes:
+      "Adicione um nó Início, depois um nó Enviar botões e, em seguida, uma Transferência — esse é o formato de menu de boas-vindas do briefing.",
+    addNode: "Adicionar nó",
+    trigger: {
+      title: "Acionamento",
+      when: "Quando…",
+      keywordOption: "Uma mensagem contém uma palavra-chave",
+      firstInboundOption: "Primeira mensagem recebida do cliente",
+      manualOption: "Apenas manual (sem acionamento automático)",
+      keywordsLabel: "Palavras-chave (separadas por vírgula)",
+      keywordsPlaceholder: "suporte, ajuda, oi",
+    },
+    entry: {
+      label: "Nó de entrada:",
+      placeholder: "Escolha o primeiro nó…",
+      badge: "Entrada",
+    },
+    node: {
+      entryBadge: "Entrada",
+      setAsEntry: "Definir como entrada",
+      removeNode: "Remover nó",
+      showAdvanced: "Mostrar avançado",
+      hideAdvanced: "Ocultar avançado",
+      nodeKeyLabel:
+        "Chave do nó (identificador interno — mantenha estável para análises)",
+      replyIdsHint:
+        "Os IDs de resposta de cada opção são exibidos acima. Eles são retornados pelo WhatsApp quando um cliente toca; normalmente você não precisa alterá-los.",
+    },
+  },
+  canvas: {
+    addNode: "Adicionar nó",
+    emptyNodes: "Nenhum nó ainda.",
+    sheet: {
+      entryBadge: "Entrada",
+      setAsEntry: "Definir como entrada",
+      deleteNode: "Excluir nó",
+    },
+  },
+  shell: {
+    viewGroupLabel: "Visualização do editor",
+    canvas: "Mapa",
+    list: "Lista",
+  },
+  header: {
+    breadcrumb: "Fluxos",
+    namePlaceholder: "Nome do fluxo",
+    descriptionPlaceholder:
+      "Descrição opcional (interna — os clientes não veem isto)",
+    editedBadge: "Editado",
+    editedTitle: "Alterações não salvas — clique em Salvar para persistir",
+    runs: "Execuções",
+    pause: "Pausar",
+    activate: "Ativar",
+    save: "Salvar",
+    fixIssuesTooltip: "Corrija os problemas abaixo antes de ativar",
+  },
+  state: {
+    saved: "Salvo.",
+    fixIssuesBeforeActivating: "Corrija os problemas abaixo antes de ativar.",
+    flowActivated: "Fluxo ativado.",
+    archived: "Arquivado.",
+    savedAsDraft: "Salvo como rascunho.",
+    saveFailed: "Falha ao salvar",
+    statusUpdateFailed: "Falha ao atualizar o status",
+    deleteFailed: "Falha ao excluir",
+    deleteConfirm:
+      'Excluir "{name}"? Quaisquer execuções ativas serão encerradas imediatamente. Isso não pode ser desfeito.',
+  },
+  nodeTypes: {
+    start: "Início",
+    sendMessage: "Enviar mensagem",
+    sendButtons: "Enviar botões",
+    sendList: "Enviar lista",
+    sendMedia: "Enviar mídia",
+    collectInput: "Coletar resposta",
+    condition: "Se / senão",
+    setTag: "Marcar contato",
+    handoff: "Transferir para atendente",
+    end: "Fim",
+  },
+  validation: {
+    noIssues: "Nenhum problema. Pronto para ativar.",
+    summary: "{errors}, {warnings}",
+    error_one: "{count} erro",
+    error_other: "{count} erros",
+    warning_one: "{count} aviso",
+    warning_other: "{count} avisos",
+    jumpTo: "Ir para o nó {nodeKey}",
+  },
+  summary: {
+    option_one: "{count} opção",
+    option_other: "{count} opções",
+    section_one: "{count} seção",
+    section_other: "{count} seções",
+    optionsAcrossSections: "{options} em {sections}",
+    media: "Mídia",
+    file: "arquivo",
+    noFileUploaded: "{label} (nenhum arquivo enviado)",
+    hasTag: "tem a etiqueta {tag}",
+    opContains: "contém",
+    opExists: "existe",
+    opMissing: "ausente",
+    addTag: "Adicionar etiqueta {id}…",
+    addTagNone: "Adicionar etiqueta (nenhuma escolhida)",
+    removeTag: "Remover etiqueta {id}…",
+    removeTagNone: "Remover etiqueta (nenhuma escolhida)",
+  },
+} as const;
+
+export default flows;

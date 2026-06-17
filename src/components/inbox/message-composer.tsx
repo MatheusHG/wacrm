@@ -7,6 +7,7 @@ import { GatedButton } from "@/components/ui/gated-button";
 import { useCan } from "@/hooks/use-can";
 import { cn } from "@/lib/utils";
 import { ReplyQuote } from "./reply-quote";
+import { useI18n } from "@/hooks/use-i18n";
 
 interface ReplyDraft {
   /** Internal UUID of the message being replied to — sent back through onSend. */
@@ -32,6 +33,7 @@ export function MessageComposer({
   replyTo,
   onClearReply,
 }: MessageComposerProps) {
+  const { t } = useI18n();
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -97,7 +99,7 @@ export function MessageComposer({
       {sessionExpired && (
         <div className="mb-2 flex items-center justify-between rounded-lg bg-amber-500/10 px-3 py-2">
           <p className="text-xs text-amber-400">
-            24-hour session expired. Use a template to re-engage.
+            {t("inbox.composer.sessionExpired")}
           </p>
           <Button
             variant="ghost"
@@ -106,7 +108,7 @@ export function MessageComposer({
             onClick={onOpenTemplates}
           >
             <LayoutTemplate className="mr-1 h-3 w-3" />
-            Templates
+            {t("inbox.composer.templates")}
           </Button>
         </div>
       )}
@@ -116,8 +118,8 @@ export function MessageComposer({
           variant="ghost"
           size="sm"
           canAct={!readOnly}
-          gateReason="send messages"
-          title={readOnly ? undefined : "Send template"}
+          gateReason={t("inbox.composer.sendMessagesGate")}
+          title={readOnly ? undefined : t("inbox.composer.sendTemplate")}
           className="h-9 w-9 shrink-0 p-0 text-muted-foreground hover:text-foreground"
           onClick={onOpenTemplates}
         >
@@ -131,17 +133,17 @@ export function MessageComposer({
           onKeyDown={handleKeyDown}
           placeholder={
             readOnly
-              ? "Read-only — viewers can browse but not reply"
+              ? t("inbox.composer.readOnlyPlaceholder")
               : sessionExpired
-                ? "Session expired - use a template"
-                : "Type a message... (Shift+Enter for new line)"
+                ? t("inbox.composer.sessionExpiredPlaceholder")
+                : t("inbox.composer.typeMessagePlaceholder")
           }
           disabled={sessionExpired || readOnly}
           rows={1}
           // Textarea keeps its own inline title — the GatedButton
           // wrapping pattern doesn't apply to non-button inputs.
           // The placeholder text also surfaces the read-only state.
-          title={readOnly ? "Read-only — your role can't send messages" : undefined}
+          title={readOnly ? t("inbox.composer.readOnlyTitle") : undefined}
           className={cn(
             "flex-1 resize-none rounded-xl border border-border bg-muted px-4 py-2.5 text-sm text-foreground placeholder-muted-foreground outline-none transition-colors focus:border-primary/50",
             (sessionExpired || readOnly) && "cursor-not-allowed opacity-50"
@@ -151,7 +153,7 @@ export function MessageComposer({
         <GatedButton
           size="sm"
           canAct={!readOnly}
-          gateReason="send messages"
+          gateReason={t("inbox.composer.sendMessagesGate")}
           disabled={!text.trim() || sessionExpired || sending}
           onClick={handleSend}
           className="h-9 w-9 shrink-0 bg-primary p-0 hover:bg-primary/90 disabled:opacity-40"
@@ -164,7 +166,7 @@ export function MessageComposer({
           `items-end` buttons below the textarea. Indented to line up
           under the textarea left edge (w-9 button + gap-2 = 44px). */}
       <p className="mt-1 pl-11 text-[10px] text-muted-foreground">
-        Type &apos;/&apos; for quick replies
+        {t("inbox.composer.quickRepliesHint")}
       </p>
     </div>
   );

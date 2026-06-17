@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { Plus, X, Loader2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useAuth } from '@/hooks/use-auth';
+import { useI18n } from '@/hooks/use-i18n';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -20,18 +21,19 @@ import {
 import type { Tag } from '@/types';
 
 const PRESET_COLORS = [
-  { name: 'Red', value: '#ef4444' },
-  { name: 'Orange', value: '#f97316' },
-  { name: 'Amber', value: '#f59e0b' },
-  { name: 'Emerald', value: '#10b981' },
-  { name: 'Cyan', value: '#06b6d4' },
-  { name: 'Blue', value: '#3b82f6' },
-  { name: 'Violet', value: '#8b5cf6' },
-  { name: 'Pink', value: '#ec4899' },
-];
+  { nameKey: 'red', value: '#ef4444' },
+  { nameKey: 'orange', value: '#f97316' },
+  { nameKey: 'amber', value: '#f59e0b' },
+  { nameKey: 'emerald', value: '#10b981' },
+  { nameKey: 'cyan', value: '#06b6d4' },
+  { nameKey: 'blue', value: '#3b82f6' },
+  { nameKey: 'violet', value: '#8b5cf6' },
+  { nameKey: 'pink', value: '#ec4899' },
+] as const;
 
 export function TagManager() {
   const supabase = createClient();
+  const { t } = useI18n();
   const { user, accountId, loading: authLoading } = useAuth();
 
   const [loading, setLoading] = useState(true);
@@ -42,7 +44,9 @@ export function TagManager() {
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [newTagName, setNewTagName] = useState('');
-  const [selectedColor, setSelectedColor] = useState(PRESET_COLORS[3].value);
+  const [selectedColor, setSelectedColor] = useState<string>(
+    PRESET_COLORS[3].value,
+  );
 
   useEffect(() => {
     if (authLoading) return;
@@ -68,7 +72,7 @@ export function TagManager() {
       setTags(data || []);
     } catch (err) {
       console.error('Failed to fetch tags:', err);
-      toast.error('Failed to load tags');
+      toast.error(t('settings.tags.loadError'));
     } finally {
       setLoading(false);
     }
@@ -76,14 +80,14 @@ export function TagManager() {
 
   async function handleCreate() {
     if (!newTagName.trim()) {
-      toast.error('Tag name is required');
+      toast.error(t('settings.tags.nameRequired'));
       return;
     }
 
     try {
       setSaving(true);
       if (!user || !accountId) {
-        toast.error('Not authenticated');
+        toast.error(t('settings.tags.notAuthenticated'));
         return;
       }
 
@@ -98,14 +102,14 @@ export function TagManager() {
 
       if (error) throw error;
 
-      toast.success('Tag created successfully');
+      toast.success(t('settings.tags.created'));
       setDialogOpen(false);
       setNewTagName('');
       setSelectedColor(PRESET_COLORS[3].value);
       if (user) await fetchTags(user.id);
     } catch (err) {
       console.error('Create error:', err);
-      toast.error('Failed to create tag');
+      toast.error(t('settings.tags.createError'));
     } finally {
       setSaving(false);
     }
@@ -128,13 +132,13 @@ export function TagManager() {
 
       if (error) throw error;
 
-      toast.success('Tag deleted');
-      setTags((prev) => prev.filter((t) => t.id !== tagToDelete.id));
+      toast.success(t('settings.tags.deleted'));
+      setTags((prev) => prev.filter((tg) => tg.id !== tagToDelete.id));
       setDeleteDialogOpen(false);
       setTagToDelete(null);
     } catch (err) {
       console.error('Delete error:', err);
-      toast.error('Failed to delete tag');
+      toast.error(t('settings.tags.deleteError'));
     } finally {
       setDeleting(false);
     }
@@ -152,8 +156,8 @@ export function TagManager() {
     <div className="space-y-4 mt-4">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-foreground">Tags</h2>
-          <p className="text-sm text-muted-foreground">Organize your contacts with color-coded tags.</p>
+          <h2 className="text-lg font-semibold text-foreground">{t('settings.tags.title')}</h2>
+          <p className="text-sm text-muted-foreground">{t('settings.tags.subtitle')}</p>
         </div>
         <Button
           onClick={() => {
@@ -164,15 +168,15 @@ export function TagManager() {
           className="bg-primary hover:bg-primary/90 text-primary-foreground"
         >
           <Plus className="size-4" />
-          New Tag
+          {t('settings.tags.newTag')}
         </Button>
       </div>
 
       {tags.length === 0 ? (
         <Card className="bg-card border-border ring-0 ring-transparent">
           <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-            <p className="text-muted-foreground text-sm">No tags yet.</p>
-            <p className="text-muted-foreground text-xs mt-1">Create tags to categorize your contacts.</p>
+            <p className="text-muted-foreground text-sm">{t('settings.tags.empty')}</p>
+            <p className="text-muted-foreground text-xs mt-1">{t('settings.tags.emptyHint')}</p>
           </CardContent>
         </Card>
       ) : (
@@ -211,17 +215,17 @@ export function TagManager() {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="bg-popover border-border sm:max-w-sm">
           <DialogHeader>
-            <DialogTitle className="text-popover-foreground">New Tag</DialogTitle>
+            <DialogTitle className="text-popover-foreground">{t('settings.tags.dialog.title')}</DialogTitle>
             <DialogDescription className="text-muted-foreground">
-              Create a new tag with a name and color.
+              {t('settings.tags.dialog.description')}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-2">
             <div className="space-y-2">
-              <Label className="text-muted-foreground">Tag Name</Label>
+              <Label className="text-muted-foreground">{t('settings.tags.dialog.nameLabel')}</Label>
               <Input
-                placeholder="e.g. VIP Customer"
+                placeholder={t('settings.tags.dialog.namePlaceholder')}
                 value={newTagName}
                 onChange={(e) => setNewTagName(e.target.value)}
                 className="bg-muted border-border text-foreground placeholder:text-muted-foreground"
@@ -232,7 +236,7 @@ export function TagManager() {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-muted-foreground">Color</Label>
+              <Label className="text-muted-foreground">{t('settings.tags.dialog.colorLabel')}</Label>
               <div className="flex gap-2 flex-wrap">
                 {PRESET_COLORS.map((color) => (
                   <button
@@ -243,7 +247,7 @@ export function TagManager() {
                       backgroundColor: color.value,
                       boxShadow: selectedColor === color.value ? `0 0 0 2px var(--popover), 0 0 0 4px ${color.value}` : 'none',
                     }}
-                    title={color.name}
+                    title={t(`settings.tags.colors.${color.nameKey}`)}
                   />
                 ))}
               </div>
@@ -251,7 +255,7 @@ export function TagManager() {
 
             {/* Preview */}
             <div className="space-y-2">
-              <Label className="text-muted-foreground">Preview</Label>
+              <Label className="text-muted-foreground">{t('settings.tags.dialog.previewLabel')}</Label>
               <div>
                 <span
                   className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium"
@@ -265,7 +269,7 @@ export function TagManager() {
                     className="size-2 rounded-full"
                     style={{ backgroundColor: selectedColor }}
                   />
-                  {newTagName || 'Tag Name'}
+                  {newTagName || t('settings.tags.dialog.previewFallback')}
                 </span>
               </div>
             </div>
@@ -277,7 +281,7 @@ export function TagManager() {
               onClick={() => setDialogOpen(false)}
               className="border-border text-muted-foreground hover:bg-muted"
             >
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button
               onClick={handleCreate}
@@ -287,10 +291,10 @@ export function TagManager() {
               {saving ? (
                 <>
                   <Loader2 className="size-4 animate-spin" />
-                  Creating...
+                  {t('settings.tags.dialog.creating')}
                 </>
               ) : (
-                'Create Tag'
+                t('settings.tags.dialog.create')
               )}
             </Button>
           </DialogFooter>
@@ -301,10 +305,9 @@ export function TagManager() {
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent className="bg-popover border-border sm:max-w-sm">
           <DialogHeader>
-            <DialogTitle className="text-popover-foreground">Delete Tag</DialogTitle>
+            <DialogTitle className="text-popover-foreground">{t('settings.tags.deleteDialog.title')}</DialogTitle>
             <DialogDescription className="text-muted-foreground">
-              Are you sure you want to delete the tag &quot;{tagToDelete?.name}&quot;? This will remove
-              it from all contacts. This action cannot be undone.
+              {t('settings.tags.deleteDialog.description', { name: tagToDelete?.name ?? '' })}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="bg-popover border-border">
@@ -313,7 +316,7 @@ export function TagManager() {
               onClick={() => setDeleteDialogOpen(false)}
               className="border-border text-muted-foreground hover:bg-muted"
             >
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button
               onClick={handleDelete}
@@ -323,10 +326,10 @@ export function TagManager() {
               {deleting ? (
                 <>
                   <Loader2 className="size-4 animate-spin" />
-                  Deleting...
+                  {t('settings.tags.deleteDialog.deleting')}
                 </>
               ) : (
-                'Delete Tag'
+                t('settings.tags.deleteDialog.confirm')
               )}
             </Button>
           </DialogFooter>

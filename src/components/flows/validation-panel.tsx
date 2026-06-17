@@ -19,10 +19,12 @@
 
 import { CircleAlert, CircleCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useI18n } from "@/hooks/use-i18n";
 import type { ValidationIssue } from "@/lib/flows/validate";
 import { useFlowEditor } from "./flow-editor-state";
 
 export function ValidationPanel() {
+  const { t } = useI18n();
   const { issues, requestFlash } = useFlowEditor();
 
   if (issues.length === 0) {
@@ -32,7 +34,7 @@ export function ValidationPanel() {
     return (
       <div className="flex items-center gap-2 rounded-lg border border-emerald-600/50 bg-background p-3 text-sm font-medium text-emerald-300">
         <CircleCheck className="h-4 w-4 shrink-0" />
-        No issues. Ready to activate.
+        {t("flows.validation.noIssues")}
       </div>
     );
   }
@@ -51,8 +53,18 @@ export function ValidationPanel() {
         ) : (
           <CircleAlert className="h-4 w-4 text-amber-400" />
         )}
-        {errors.length} error{errors.length === 1 ? "" : "s"},{" "}
-        {warnings.length} warning{warnings.length === 1 ? "" : "s"}
+        {t("flows.validation.summary", {
+          errors:
+            errors.length === 1
+              ? t("flows.validation.error_one", { count: errors.length })
+              : t("flows.validation.error_other", { count: errors.length }),
+          warnings:
+            warnings.length === 1
+              ? t("flows.validation.warning_one", { count: warnings.length })
+              : t("flows.validation.warning_other", {
+                  count: warnings.length,
+                }),
+        })}
       </div>
       <div className="flex flex-col gap-1">
         {issues.map((i, ix) => (
@@ -76,6 +88,7 @@ export function IssueLine({
   issue: ValidationIssue;
   onJump?: (key: string) => void;
 }) {
+  const { t } = useI18n();
   const tone =
     issue.severity === "error" ? "text-red-300" : "text-amber-300";
   const iconTone =
@@ -106,7 +119,7 @@ export function IssueLine({
           "flex w-full items-start gap-2 rounded-md px-2 py-1 text-left text-xs transition-colors hover:bg-muted/60",
           tone,
         )}
-        aria-label={`Jump to node ${issue.node_key}`}
+        aria-label={t("flows.validation.jumpTo", { nodeKey: issue.node_key })}
       >
         {body}
       </button>

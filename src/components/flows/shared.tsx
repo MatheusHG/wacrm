@@ -30,6 +30,8 @@ import {
   Workflow,
 } from "lucide-react";
 
+import type { Translator } from "@/lib/i18n/translate";
+
 // ============================================================
 // Node-type union — single source of truth for every place the UI
 // enumerates types (add menu, type pickers, switch statements). Kept
@@ -67,50 +69,58 @@ export interface BuilderNode {
 
 export const NODE_META: Record<
   NodeType,
-  { label: string; icon: typeof Workflow; color: string }
+  { labelKey: string; icon: typeof Workflow; color: string }
 > = {
-  start: { label: "Start", icon: PlayCircle, color: "text-emerald-400" },
+  start: {
+    labelKey: "flows.nodeTypes.start",
+    icon: PlayCircle,
+    color: "text-emerald-400",
+  },
   send_message: {
-    label: "Send message",
+    labelKey: "flows.nodeTypes.sendMessage",
     icon: MessageCircle,
     color: "text-sky-400",
   },
   send_buttons: {
-    label: "Send buttons",
+    labelKey: "flows.nodeTypes.sendButtons",
     icon: ListChecks,
     color: "text-primary",
   },
   send_list: {
-    label: "Send list",
+    labelKey: "flows.nodeTypes.sendList",
     icon: ListPlus,
     color: "text-indigo-400",
   },
   send_media: {
-    label: "Send media",
+    labelKey: "flows.nodeTypes.sendMedia",
     icon: Paperclip,
     color: "text-cyan-400",
   },
   collect_input: {
-    label: "Collect input",
+    labelKey: "flows.nodeTypes.collectInput",
     icon: Inbox,
     color: "text-teal-400",
   },
   condition: {
-    label: "If / else",
+    labelKey: "flows.nodeTypes.condition",
     icon: GitFork,
     color: "text-fuchsia-400",
   },
   set_tag: {
-    label: "Tag contact",
+    labelKey: "flows.nodeTypes.setTag",
     icon: Tag,
     color: "text-pink-400",
   },
   handoff: {
-    label: "Handoff to agent",
+    labelKey: "flows.nodeTypes.handoff",
     icon: UserPlus,
     color: "text-amber-400",
   },
-  end: { label: "End", icon: Flag, color: "text-muted-foreground" },
+  end: {
+    labelKey: "flows.nodeTypes.end",
+    icon: Flag,
+    color: "text-muted-foreground",
+  },
 };
 
 // ============================================================
@@ -145,7 +155,10 @@ export function truncate(s: string, max = 80): string {
   return clean.slice(0, max - 1) + "…";
 }
 
-export function summarizeNode(node: BuilderNode): string | null {
+export function summarizeNode(
+  node: BuilderNode,
+  t: Translator,
+): string | null {
   const cfg = node.config;
   switch (node.node_type) {
     case "start":
@@ -178,13 +191,24 @@ export function summarizeNode(node: BuilderNode): string | null {
         const rows = Array.isArray(s.rows) ? s.rows : [];
         return sum + rows.length;
       }, 0);
+      const optionsLabel =
+        rowCount === 1
+          ? t("flows.summary.option_one", { count: rowCount })
+          : t("flows.summary.option_other", { count: rowCount });
       if (text.length > 0) {
         return rowCount > 0
-          ? `${truncate(text, 50)} · ${rowCount} option${rowCount === 1 ? "" : "s"}`
+          ? `${truncate(text, 50)} · ${optionsLabel}`
           : truncate(text);
       }
+      const sectionsLabel =
+        sections.length === 1
+          ? t("flows.summary.section_one", { count: sections.length })
+          : t("flows.summary.section_other", { count: sections.length });
       return rowCount > 0
-        ? `${rowCount} option${rowCount === 1 ? "" : "s"} across ${sections.length} section${sections.length === 1 ? "" : "s"}`
+        ? t("flows.summary.optionsAcrossSections", {
+            options: optionsLabel,
+            sections: sectionsLabel,
+          })
         : null;
     }
     case "send_media": {
@@ -195,9 +219,9 @@ export function summarizeNode(node: BuilderNode): string | null {
       const caption = typeof cfg.caption === "string" ? cfg.caption : "";
       const label = mediaType
         ? mediaType.charAt(0).toUpperCase() + mediaType.slice(1)
-        : "Media";
-      if (!url) return `${label} (no file uploaded)`;
-      const name = filename || url.split("/").pop() || "file";
+        : t("flows.summary.media");
+      if (!url) return t("flows.summary.noFileUploaded", { label });
+      const name = filename || url.split("/").pop() || t("flows.summary.file");
       return caption
         ? `${label}: ${truncate(name, 30)} · ${truncate(caption, 40)}`
         : `${label}: ${truncate(name, 60)}`;
@@ -221,16 +245,18 @@ export function summarizeNode(node: BuilderNode): string | null {
             ? "field"
             : "var";
       const subjectStr =
-        subject === "tag" ? `has tag ${truncate(subjectKey, 24)}` : `${subject}.${subjectKey}`;
+        subject === "tag"
+          ? t("flows.summary.hasTag", { tag: truncate(subjectKey, 24) })
+          : `${subject}.${subjectKey}`;
       const op =
         cfg.operator === "equals"
           ? "=="
           : cfg.operator === "contains"
-            ? "contains"
+            ? t("flows.summary.opContains")
             : cfg.operator === "present"
-              ? "exists"
+              ? t("flows.summary.opExists")
               : cfg.operator === "absent"
-                ? "missing"
+                ? t("flows.summary.opMissing")
                 : "";
       const value = typeof cfg.value === "string" ? cfg.value : "";
       const valStr =
@@ -240,12 +266,18 @@ export function summarizeNode(node: BuilderNode): string | null {
       return subject === "tag" ? subjectStr : `${subjectStr} ${op}${valStr}`;
     }
     case "set_tag": {
-      const mode = cfg.mode === "remove" ? "Remove" : "Add";
       const tagId = typeof cfg.tag_id === "string" ? cfg.tag_id : "";
       // No tag name available without an async lookup here; show a
       // short prefix of the UUID so users can disambiguate between
       // multiple set_tag nodes at a glance.
-      return tagId ? `${mode} tag ${tagId.slice(0, 8)}…` : `${mode} tag (none picked)`;
+      if (cfg.mode === "remove") {
+        return tagId
+          ? t("flows.summary.removeTag", { id: tagId.slice(0, 8) })
+          : t("flows.summary.removeTagNone");
+      }
+      return tagId
+        ? t("flows.summary.addTag", { id: tagId.slice(0, 8) })
+        : t("flows.summary.addTagNone");
     }
     case "handoff": {
       const note = typeof cfg.note === "string" ? cfg.note : "";

@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import { ThemeProvider } from "@/hooks/use-theme";
+import { I18nProvider } from "@/hooks/use-i18n";
+import { getLocale } from "@/lib/i18n/server";
 import { ThemedToaster } from "@/components/themed-toaster";
 import {
   DEFAULT_MODE,
@@ -75,14 +77,15 @@ const THEME_BOOT_SCRIPT = `
 })();
 `;
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
   return (
     <html
-      lang="en"
+      lang={locale}
       data-theme={DEFAULT_THEME}
       data-mode={DEFAULT_MODE}
       className={`${inter.variable} h-full antialiased`}
@@ -103,10 +106,12 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full bg-background text-foreground font-sans">
-        <ThemeProvider>
-          {children}
-          <ThemedToaster />
-        </ThemeProvider>
+        <I18nProvider initialLocale={locale}>
+          <ThemeProvider>
+            {children}
+            <ThemedToaster />
+          </ThemeProvider>
+        </I18nProvider>
       </body>
     </html>
   );

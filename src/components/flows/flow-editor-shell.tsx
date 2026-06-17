@@ -24,6 +24,7 @@ import { FlowCanvas } from "./flow-canvas";
 import { FlowEditorProvider } from "./flow-editor-state";
 import { EditorHeader } from "./header";
 import { ValidationPanel } from "./validation-panel";
+import { useI18n } from "@/hooks/use-i18n";
 import { cn } from "@/lib/utils";
 import type { FlowRow, FlowNodeRow } from "@/lib/flows/types";
 
@@ -45,6 +46,7 @@ interface Props {
 }
 
 export function FlowEditorShell({ initialFlow, initialNodes }: Props) {
+  const { t } = useI18n();
   // Read the persisted choice in the useState initializer. Safe even
   // though this is a client component because the parent page only
   // mounts us AFTER a client-side fetch resolves — there's no SSR
@@ -84,20 +86,20 @@ export function FlowEditorShell({ initialFlow, initialNodes }: Props) {
           <div className="flex items-center justify-end">
             <div
               role="group"
-              aria-label="Editor view"
+              aria-label={t("flows.shell.viewGroupLabel")}
               className="inline-flex items-center gap-1 rounded-md border border-border bg-card p-0.5 text-xs"
             >
               <ToggleButton
                 active={effectiveView === "canvas"}
                 onClick={() => choose("canvas")}
                 icon={<LayoutGrid className="h-3 w-3" />}
-                label="Canvas"
+                label={t("flows.shell.canvas")}
               />
               <ToggleButton
                 active={effectiveView === "list"}
                 onClick={() => choose("list")}
                 icon={<ListTree className="h-3 w-3" />}
-                label="List"
+                label={t("flows.shell.list")}
               />
             </div>
           </div>
