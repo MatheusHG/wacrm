@@ -55,6 +55,17 @@ const SECURITY_HEADERS = [
 
 const nextConfig: NextConfig = {
   /**
+   * Self-hosted production runs under a Node process manager (PM2) with
+   * a startup file rather than `next start`. `output: "standalone"`
+   * makes `next build` emit a self-contained `.next/standalone/server.js`
+   * to point the process manager at.
+   *
+   * After build, copy `public/` and `.next/static/` into
+   * `.next/standalone/` — Next intentionally does not bundle them.
+   */
+  output: "standalone",
+
+  /**
    * Cache-Control policy.
    *
    * Why this exists:
