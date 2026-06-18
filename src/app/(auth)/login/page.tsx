@@ -142,20 +142,6 @@ function LoginPageInner() {
               {loading ? t("auth.login.submitting") : t("auth.login.submit")}
             </Button>
           </form>
-
-          <p className="mt-6 text-center text-sm text-muted-foreground">
-            {t("auth.login.noAccount")}{" "}
-            <Link
-              href={
-                inviteToken
-                  ? `/signup?invite=${encodeURIComponent(inviteToken)}`
-                  : "/signup"
-              }
-              className="text-primary hover:text-primary/80"
-            >
-              {t("auth.login.createAccount")}
-            </Link>
-          </p>
         </CardContent>
       </Card>
     </div>
