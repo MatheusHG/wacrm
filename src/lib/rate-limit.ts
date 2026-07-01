@@ -117,10 +117,14 @@ export const RATE_LIMITS = {
   /** Individual message send. 60/min per user = one per second
    *  sustained, comfortable for a live human typing. */
   send: { limit: 60, windowMs: 60_000 },
-  /** Broadcast dispatch. 5/min per user — even a 1 000-recipient
-   *  broadcast is one call; this caps the rate at which a single user
-   *  can launch campaigns, not the messages inside one. */
-  broadcast: { limit: 5, windowMs: 60_000 },
+  /** Broadcast dispatch. The client sends in batches of 10 (one API
+   *  call per batch, ~1 call/s), so a single campaign fires MANY calls
+   *  — the old 5/min limit choked any broadcast past ~50 recipients
+   *  ("Rate limit exceeded" on the rest). 120/min ≈ 1 200 recipients/
+   *  min of headroom, comfortably above the client's ~60 calls/min real
+   *  rate, while still bounding runaway abuse. Meta's per-number daily
+   *  tier is the real send cap. */
+  broadcast: { limit: 120, windowMs: 60_000 },
   /** Reaction add/swap/remove. More permissive than send — users
    *  fidget with reactions and a single "swap" is actually two calls
    *  (remove + add) under the hood. */
